@@ -1,0 +1,39 @@
+version: "2.4"
+
+services:
+  mopidy:
+    image: "f3nr1s/mopidy"
+    ports:
+      - "127.0.0.1:6680:6680"
+      - "127.0.0.1:6600:6600"
+#    environment:
+#      - UPDATE=1
+    volumes:
+      - fifo:/tmp/snapcast/
+      - ./mopidy/music:/media/music
+      - ./mopidy/data:/mopidy
+      - ./mopidy/mopidy.conf:/mopidy/mopidy.conf
+
+  snapserver:
+    image: "f3nr1s/snapcast:latest"
+#    ports:
+#      - "1704:1704"
+#      - "1705:1705"
+#      - "127.0.0.1:1780:1780"
+    expose:
+      - 1704
+      - 1705
+      - 1780
+    volumes:
+      - fifo:/tmp/snapcast/
+      - ./snapserver/snapserver.conf:/etc/snapserver.conf
+
+  snable:
+    image: "f3nr1s/snable:latest"
+    volumes:
+      - ./snable:/etc/snable
+    depends_on:
+      - snapserver
+
+volumes:
+  fifo:
